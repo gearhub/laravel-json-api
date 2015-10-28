@@ -1,0 +1,31 @@
+{
+    "name": "sonarstudios/laravel-json-api",
+    "description": "Json api for laravel.",
+    "authors": [
+        {
+            "name": "Jeff Hertzler",
+            "email": "jeffhertzler@gmail.com"
+        },
+        {
+            "name": "Vince Ruby",
+            "email": "vsruby91@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "SonarStudios\\LaravelJsonApi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SonarStudios\\LaravelJsonApi\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "illuminate/support": "~5.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.0",
+        "mockery/mockery": "0.9.*"
+    }
+}
