@@ -2,7 +2,9 @@
 
 namespace SonarStudios\LaravelJsonApi\Schema;
 
-class Resource
+use Illuminate\Contracts\Support\Arrayable;
+
+class Resource implements Arrayable
 {
     /**
      * Attributes to be visible.
@@ -103,6 +105,40 @@ class Resource
     }
 
     /**
+     * Creates array representation of Resource.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $this->validate();
+
+        $returned_array = [
+            'id'         => $this->id,
+            'type'       => $this->type,
+            'attributes' => $this->attributes
+        ];
+
+        if ($this->links) {
+            $returned_array['links'] = array_map(function($link) {
+                return $link->toArray();
+            }, $this->links);
+        }
+
+        if ($this->meta) {
+            $returned_array['meta'] = $this->meta;
+        }
+
+        if ($this->relationships) {
+            $returned_array['relationships'] = array_map(function($relationship) {
+                return $relationship->toArray();
+            }, $this->relationships);
+        }
+
+        return $returned_array;
+    }
+
+    /**
      * Add metadata to Resource.
      *
      * @param  array  $meta
@@ -139,5 +175,44 @@ class Resource
     {
         $this->relationships = $relationships;
         return $this;
+    }
+
+    /**
+     * Validate the resource.
+     *
+     * @return void
+     */
+    protected function validate()
+    {
+        $this->validateId();
+        $this->validateAttributes();
+    }
+
+    /**
+     * Validate the id member for the resource.
+     *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidResourceIdException
+     *
+     * @return void
+     */
+    protected function validateId()
+    {
+        if (empty($this->id) || (gettype($this->id) !== 'string' && gettype($this->id) !== 'integer')) {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidResourceIdException($this->id);
+        }
+    }
+
+    /**
+     * Validate the attributes member for the resource.
+     *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidResourceAttributesException
+     *
+     * @return void
+     */
+    protected function validateAttributes()
+    {
+        if (empty($this->attributes) || gettype($this->attributes !== 'array')) {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidResourceAttributesException;
+        }
     }
 }

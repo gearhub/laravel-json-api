@@ -2,7 +2,9 @@
 
 namespace SonarStudios\LaravelJsonApi\Schema;
 
-class ResourceIdentifier
+use Illuminate\Contracts\Support\Arrayable;
+
+class ResourceIdentifier implements Arrayable
 {
     /**
      * Unique identifier for the resource.
@@ -80,6 +82,50 @@ class ResourceIdentifier
     }
 
     /**
+     * Creates array representation of ResourceIdentifier.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $this->validate();
+        $returned_array = [
+            'id' => $this->id,
+            'type' => $this->type
+        ];
+
+        if ($this->meta) {
+            $returned_array['meta'] = $this->meta;
+        }
+
+        return $returned_array;
+    }
+
+    /**
+     * Validate the resource identifier.
+     *
+     * @return void
+     */
+    protected function validate()
+    {
+        $this->validateId();
+    }
+
+    /**
+     * Validate the id member for the resource identifier.
+     *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidResourceIdentifierIdException
+     *
+     * @return void
+     */
+    protected function validateId()
+    {
+        if (empty($this->id) || (gettype($this->id) !== 'string' && gettype($this->id) !== 'integer')) {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidResourceIdentifierIdException($this->id);
+        }
+    }
+
+    /**
      * Add metadata to ResourceIdentifier.
      *
      * @param  array  $meta
@@ -91,5 +137,4 @@ class ResourceIdentifier
         $this->meta = $meta;
         return $this;
     }
-
 }
