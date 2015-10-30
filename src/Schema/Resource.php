@@ -9,7 +9,7 @@ class Resource
      *
      * @var array
      */
-    protected $attributes = [];
+    protected $attributes;
 
     /**
      * Unique identifier for the resource.
