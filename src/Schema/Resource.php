@@ -55,11 +55,27 @@ class Resource
      *
      * @return void
      */
-    public function __construct($type, $attributes, $id = null, $meta = [])
+    public function __construct($type, $id = null, $attributes, $links = null, $meta = null, $relationships = null)
     {
-        $this->type = $type;
-        $this->id   = $id;
-        $this->meta = $meta;
+        $this->type          = $type;
+        $this->id            = $id;
+        $this->attributes    = $attributes;
+        $this->links         = $links;
+        $this->meta          = $meta;
+        $this->relationships = $relationships;
+    }
+
+    /**
+     * Convert Resource object into ResourceIdentifier object.
+     *
+     * @param  array $meta
+     *
+     * @return ResourceIdentifier
+     */
+    public function convertToResouceIdentifier($meta)
+    {
+        $meta = $meta ?: $this->meta;
+        return new ResourceIdentifier($this->type, $this->id, $meta)
     }
 
     /**
@@ -84,5 +100,44 @@ class Resource
     public function getMeta()
     {
         return $this->meta;
+    }
+
+    /**
+     * Add metadata to Resource.
+     *
+     * @param  array  $meta
+     *
+     * @return $this
+     */
+    public function withMeta($meta = [])
+    {
+        $this->meta = $meta;
+        return $this;
+    }
+
+    /**
+     * Add links to Resource.
+     *
+     * @param  Link[]  $links
+     *
+     * @return $this
+     */
+    public function withLinks($links = [])
+    {
+        $this->links = $links;
+        return $this;
+    }
+
+    /**
+     * Add relationships to Resource.
+     *
+     * @param  Relationship[]  $relationships
+     *
+     * @return $this
+     */
+    public function withRelationships($relationships = [])
+    {
+        $this->relationships = $relationships;
+        return $this;
     }
 }

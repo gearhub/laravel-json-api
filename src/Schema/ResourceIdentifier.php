@@ -30,15 +30,29 @@ class ResourceIdentifier
      *
      * @param string     $type
      * @param int|string $id
-     * @param array      $meta
      *
      * @return void
      */
-    public function __construct($type, $id, $meta = [])
+    public function __construct($type, $id)
     {
         $this->type = $type;
         $this->id   = $id;
-        $this->meta = $meta;
+    }
+
+    /**
+     * Convert a ResourceIdentifier object into a Resource object.
+     *
+     * @param  array $attributes
+     * @param  Link[] $links
+     * @param  array $meta
+     * @param  Relationship[] $relationships
+     *
+     * @return Resource
+     */
+    public function convertToResource($attributes, $links = null, $meta = null, $relationships = null)
+    {
+        $meta = $meta ?: $this->meta;
+        return new Resource($this->type, $this->id, $attributes, $links, $meta, $relationships);
     }
 
     /**
@@ -64,4 +78,18 @@ class ResourceIdentifier
     {
         return $this->meta;
     }
+
+    /**
+     * Add metadata to ResourceIdentifier.
+     *
+     * @param  array  $meta
+     *
+     * @return $this
+     */
+    public function withMeta($meta = [])
+    {
+        $this->meta = $meta;
+        return $this;
+    }
+
 }
