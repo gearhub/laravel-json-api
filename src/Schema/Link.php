@@ -2,7 +2,9 @@
 
 namespace SonarStudios\LaravelJsonApi\Schema;
 
-class Link
+use Illuminate\Contracts\Support\Arrayable;
+
+class Link implements Arrayable
 {
 
     protected $allowable_keys = [
