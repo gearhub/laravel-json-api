@@ -97,7 +97,7 @@ class Link implements Arrayable
     }
 
     /**
-     * Creates array representation of Link.
+     * Create array representation of Link.
      *
      * @return array
      */
@@ -106,16 +106,12 @@ class Link implements Arrayable
         $this->validate();
         $returned_array = [];
         if ($this->isObject) {
-            $returned_array[
-                $this->key => [
-                    'href' => $this->href,
-                    'meta' => $this->meta
-                ]
+            $returned_array[$this->key] = [
+                'href' => $this->href,
+                'meta' => $this->meta
             ];
         } else {
-            $returned_array[
-                $this->key => $this->href
-            ];
+            $returned_array[$this->key] = $this->href;
         }
         return $returned_array;
     }
