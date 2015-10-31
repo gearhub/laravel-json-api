@@ -44,26 +44,25 @@ class Link implements Arrayable
      */
     public function __construct($key, $href, $meta = null)
     {
-        $this->key  = $key;
-        $this->href = $href;
-        $this->meta = $meta;
+        $this->setKey($key);
+        $this->setHref($href);
+        $this->setMeta($meta);
     }
 
     /**
      * Add to existing metadata.
      *
-     * @param array $meta
+     * @param array $additional_meta
      *
      * @return $this
      */
-    public function addMeta(array $meta)
+    public function addMeta(array $additional_meta)
     {
-        if (is_array($this->meta)) {
-            $this->meta = array_merge($this->meta, $meta);
-        } else {
-            $this->meta = $meta;
+        $meta = $this->meta;
+        if (is_array($meta)) {
+            $meta = array_merge($meta, $additional_meta);
         }
-        return $this;
+        return $this->setMeta($meta);
     }
 
     /**
@@ -97,13 +96,66 @@ class Link implements Arrayable
     }
 
     /**
+     * Set Link href.
+     *
+     * @param string $href
+     *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\Exception
+     *
+     * @return $this
+     */
+    public function setHref($href)
+    {
+        if (empty($href)) {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\Exception("Invalid Href.");
+        }
+        $this->href = $href;
+        return $this;
+    }
+
+    /**
+     * Set Link key.
+     *
+     * @param string $key
+     *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidLinkKeyException
+     *
+     * @return $this
+     */
+    public function setKey($key)
+    {
+        if (!in_array($key, $this->allowable_keys)) {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidLinkKeyException($this->key);
+        }
+        $this->key = $key;
+        return $this;
+    }
+
+    /**
+     * Set metadata on Link.
+     *
+     * @param  array|null  $meta
+     *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\Exception
+     *
+     * @return $this
+     */
+    public function setMeta($meta)
+    {
+        if (!is_null($meta) && gettype($meta) !== 'array') {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\Exception("Invalid metadata.");
+        }
+        $this->meta = $meta;
+        return $this;
+    }
+
+    /**
      * Create array representation of Link.
      *
      * @return array
      */
     public function toArray()
     {
-        $this->validate();
         $returned_array = [];
         if ($this->isObject) {
             $returned_array[$this->key] = [
@@ -117,19 +169,6 @@ class Link implements Arrayable
     }
 
     /**
-     * Set metadata on Link.
-     *
-     * @param  array  $meta
-     *
-     * @return $this
-     */
-    public function withMeta(array $meta)
-    {
-        $this->meta = $meta;
-        return $this;
-    }
-
-    /**
      * Check if the link should have an object value vs. a string.
      *
      * @return boolean
@@ -139,25 +178,4 @@ class Link implements Arrayable
         return isset($this->meta);
     }
 
-    /**
-     * Validate link.
-     *
-     * @return void
-     */
-    protected function validate()
-    {
-        $this->validateKey();
-    }
-
-    /**
-     * Validate Link key.
-     *
-     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidLinkKeyException
-     */
-    protected function validateKey()
-    {
-        if (!in_array($this->key, $this->allowable_keys)) {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidLinkKeyException($this->key);
-        }
-    }
 }
