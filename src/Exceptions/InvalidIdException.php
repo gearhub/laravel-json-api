@@ -2,8 +2,6 @@
 
 namespace SonarStudios\LaravelJsonApi\Exceptions;
 
-use Exception;
-
 class InvalidIdException extends Exception
 {
     public function __construct($id, $class)

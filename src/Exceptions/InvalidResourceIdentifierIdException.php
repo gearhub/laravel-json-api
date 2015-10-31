@@ -2,8 +2,6 @@
 
 namespace SonarStudios\LaravelJsonApi\Exceptions;
 
-use Exception;
-
 use SonarStudios\LaravelJsonApi\Schema\ResourceIdentifier;
 
 class InvalidResourceIdentifierIdException extends InvalidIdException
