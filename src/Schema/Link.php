@@ -7,6 +7,10 @@ use Illuminate\Contracts\Support\Arrayable;
 class Link implements Arrayable
 {
 
+    /**
+     * Allowable keys list.
+     * @var string[]
+     */
     protected $allowable_keys = [
         'self',
         'related',
