@@ -2,10 +2,10 @@
 
 namespace SonarStudios\LaravelJsonApi\Exceptions;
 
-class InvalidIdException extends Exception
+class InvalidIdException extends InvalidArgumentException
 {
     public function __construct($id, $class)
     {
-        parent::__construct("Invalid Id: [{$id}] for class: [{$class}]. Must be of type integer or string.");
+        parent::__construct("Invalid Id: [{$id}] for Class: [{$class}]. Must be of type integer or string.");
     }
 }

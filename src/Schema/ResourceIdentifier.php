@@ -7,29 +7,23 @@ use Illuminate\Contracts\Support\Arrayable;
 class ResourceIdentifier implements Arrayable
 {
     /**
-     * Unique identifier for the resource.
+     * Unique identifier.
      *
      * @var int|string
      */
     protected $id;
 
     /**
-     * Metadata for the resource.
-     *
      * @var array
      */
     protected $meta;
 
     /**
-     * Type of the resource.
-     *
      * @var string
      */
     protected $type;
 
     /**
-     * Create a new resource identifier instance.
-     *
      * @param string     $type
      * @param int|string $id
      *
@@ -37,24 +31,38 @@ class ResourceIdentifier implements Arrayable
      */
     public function __construct($type, $id)
     {
-        $this->type = $type;
-        $this->id   = $id;
+        $this->setType($type);
+        $this->setId($id);
     }
 
     /**
-     * Convert a ResourceIdentifier object into a Resource object.
+     * @param array $additional_meta
      *
-     * @param  array $attributes
-     * @param  Link[] $links
-     * @param  array $meta
-     * @param  Relationship[] $relationships
+     * @return $this
+     */
+    public function addMeta($additional_meta)
+    {
+        if (gettype($additional_meta) !== 'array') {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException($additional_meta, self::class);
+        }
+        if (is_array($this->meta)) {
+            $meta = array_merge($this->meta, $additional_meta);
+        } else {
+            $meta = $additional_meta;
+        }
+        return $this->setMeta($meta);
+    }
+
+    /**
+     * @param  array               $attributes
+     * @param  Link[]|null         $links
+     * @param  Relationship[]|null $relationships
      *
      * @return Resource
      */
-    public function convertToResource($attributes, $links = null, $meta = null, $relationships = null)
+    public function convertToResource($attributes, $links = null, $relationships = null)
     {
-        $meta = $meta ?: $this->meta;
-        return new Resource($this->type, $this->id, $attributes, $links, $meta, $relationships);
+        return new Resource($this->type, $this->id, $attributes, $links, $relationships, $this->meta);
     }
 
     /**
@@ -74,7 +82,7 @@ class ResourceIdentifier implements Arrayable
     }
 
     /**
-     * @return mixed
+     * @return array|null
      */
     public function getMeta()
     {
@@ -82,15 +90,60 @@ class ResourceIdentifier implements Arrayable
     }
 
     /**
-     * Creates array representation of ResourceIdentifier.
+     * @param int|string $id
      *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidIdException
+     *
+     * @return $this
+     */
+    public function setId($id)
+    {
+        if (empty($id) || (gettype($id) !== 'string' && gettype($id) !== 'integer')) {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidIdException($id, self::class);
+        }
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidKeyException
+     *
+     * @return $this
+     */
+    public function setKey($key)
+    {
+        if (!is_string($key)) {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidKeyException($this->key, self::class);
+        }
+        $this->key = $key;
+        return $this;
+    }
+
+    /**
+     * @param  array|null $meta
+     *
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException
+     *
+     * @return $this
+     */
+    public function setMeta($meta)
+    {
+        if (!is_null($meta) && gettype($meta) !== 'array') {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException($meta, self::class);
+        }
+        $this->meta = $meta;
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function toArray()
     {
-        $this->validate();
         $returned_array = [
-            'id' => $this->id,
+            'id'   => $this->id,
             'type' => $this->type
         ];
 
@@ -99,42 +152,5 @@ class ResourceIdentifier implements Arrayable
         }
 
         return $returned_array;
-    }
-
-    /**
-     * Validate the resource identifier.
-     *
-     * @return void
-     */
-    protected function validate()
-    {
-        $this->validateId();
-    }
-
-    /**
-     * Validate the id member for the resource identifier.
-     *
-     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidResourceIdentifierIdException
-     *
-     * @return void
-     */
-    protected function validateId()
-    {
-        if (empty($this->id) || (gettype($this->id) !== 'string' && gettype($this->id) !== 'integer')) {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidResourceIdentifierIdException($this->id);
-        }
-    }
-
-    /**
-     * Add metadata to ResourceIdentifier.
-     *
-     * @param  array  $meta
-     *
-     * @return $this
-     */
-    public function withMeta($meta = [])
-    {
-        $this->meta = $meta;
-        return $this;
     }
 }
