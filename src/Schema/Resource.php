@@ -49,7 +49,7 @@ class Resource extends ResourceIdentifier
     public function addAttributes($additional_attributes)
     {
         if (gettype($additional_attributes) !== 'array') {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidAttributesException($additional_attributes, self::class);
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidAttributesException(self::class);
         }
         if (is_array($this->attributes)) {
             $attributes = array_merge($this->attributes, $additional_attributes);
@@ -68,6 +68,30 @@ class Resource extends ResourceIdentifier
     }
 
     /**
+     * @return array|null
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    /**
+     * @return Link[]|null
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * @return Relationship[]|null
+     */
+    public function getRelationships()
+    {
+        return $this->relationships;
+    }
+
+    /**
      * @param array $attributes
      *
      * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidAttributesException
@@ -76,8 +100,8 @@ class Resource extends ResourceIdentifier
      */
     public function setAttributes($attributes)
     {
-        if (empty($this->attributes) || gettype($this->attributes !== 'array')) {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidAttributesException($attributes, self::class);
+        if (empty($attributes) || gettype($attributes) !== 'array') {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidAttributesException(self::class);
         }
         $this->attributes = $attributes;
         return $this;
@@ -90,12 +114,18 @@ class Resource extends ResourceIdentifier
      */
     public function setLinks($links = null)
     {
-        $links = $links ?: [];
-        foreach($links as $link) {
-            if (get_class($link) !== Link::class) {
-                throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidLinkException($link, self::class);
+        if (!is_null($links)) {
+            if (gettype($links) !== 'array') {
+                throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidArgumentException("Invalid Links for Class: " . self::class . ". Must be an array of Links or null.");
+            }
+
+            foreach($links as $link) {
+                if (!($link instanceof Link)) {
+                    throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidLinkException(self::class);
+                }
             }
         }
+
         $this->links = $links;
         return $this;
     }
@@ -107,12 +137,18 @@ class Resource extends ResourceIdentifier
      */
     public function setRelationships($relationships = null)
     {
-        $relationships = $relationships ?: [];
-        foreach($relationships as $relationship) {
-            if (get_class($relationship) !== Relationship::class) {
-                throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidRelationshipException($relationship, self::class);
+        if (!is_null($relationships)) {
+            if (gettype($relationships) !== 'array') {
+                throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidArgumentException("Invalid Relationships for Class: " . self::class . ". Must be an array of Relationships or null.");
+            }
+
+            foreach($relationships as $relationship) {
+                if (!($relationship instanceof Relationship)) {
+                    throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidRelationshipException(self::class);
+                }
             }
         }
+
         $this->relationships = $relationships;
         return $this;
     }

@@ -29,10 +29,11 @@ class ResourceIdentifier implements Arrayable
      *
      * @return void
      */
-    public function __construct($type, $id)
+    public function __construct($type, $id, $meta = null)
     {
         $this->setType($type);
         $this->setId($id);
+        $this->setMeta($meta);
     }
 
     /**
@@ -43,7 +44,7 @@ class ResourceIdentifier implements Arrayable
     public function addMeta($additional_meta)
     {
         if (gettype($additional_meta) !== 'array') {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException($additional_meta, self::class);
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException(self::class);
         }
         if (is_array($this->meta)) {
             $meta = array_merge($this->meta, $additional_meta);
@@ -74,19 +75,19 @@ class ResourceIdentifier implements Arrayable
     }
 
     /**
-     * @return string
-     */
-    public function getKey()
-    {
-        return $this->key;
-    }
-
-    /**
      * @return array|null
      */
     public function getMeta()
     {
         return $this->meta;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
@@ -99,25 +100,25 @@ class ResourceIdentifier implements Arrayable
     public function setId($id)
     {
         if (empty($id) || (gettype($id) !== 'string' && gettype($id) !== 'integer')) {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidIdException($id, self::class);
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidIdException(self::class);
         }
         $this->id = $id;
         return $this;
     }
 
     /**
-     * @param string $key
+     * @param string $type
      *
-     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidKeyException
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidArgumentException
      *
      * @return $this
      */
-    public function setKey($key)
+    public function setType($type)
     {
-        if (!is_string($key)) {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidKeyException($this->key, self::class);
+        if (empty($type) || gettype($type) !== 'string') {
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidArgumentException("Invalid Type for Class [" . self::class . "]. Must be non-empty string");
         }
-        $this->key = $key;
+        $this->type = $type;
         return $this;
     }
 
@@ -131,7 +132,7 @@ class ResourceIdentifier implements Arrayable
     public function setMeta($meta)
     {
         if (!is_null($meta) && gettype($meta) !== 'array') {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException($meta, self::class);
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException(self::class);
         }
         $this->meta = $meta;
         return $this;

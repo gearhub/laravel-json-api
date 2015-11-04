@@ -58,7 +58,7 @@ class Link implements Arrayable
     public function addMeta($additional_meta)
     {
         if (gettype($additional_meta) !== 'array') {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException($additional_meta, self::class);
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException(self::class);
         }
         if (is_array($this->meta)) {
             $meta = array_merge($this->meta, $additional_meta);
@@ -102,7 +102,7 @@ class Link implements Arrayable
     public function setHref($href)
     {
         if (empty($href) || gettype($href) !== 'string') {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidArgumentException("Invalid Href: [{$href}] for Class [{${self::class}}]. Must be non-empty string");
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidArgumentException("Invalid Href for Class [" . self::class . "]. Must be non-empty string");
         }
         $this->href = $href;
         return $this;
@@ -118,7 +118,7 @@ class Link implements Arrayable
     public function setKey($key)
     {
         if (!in_array($key, $this->allowable_keys)) {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidKeyException($this->key, self::class, $this->allowable_keys);
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidKeyException(self::class, $this->allowable_keys);
         }
         $this->key = $key;
         return $this;
@@ -127,14 +127,14 @@ class Link implements Arrayable
     /**
      * @param  array|null  $meta
      *
-     * @throws \SonarStudios\LaravelJsonApi\Exceptions\Exception
+     * @throws \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException
      *
      * @return $this
      */
     public function setMeta($meta)
     {
         if (!is_null($meta) && gettype($meta) !== 'array') {
-            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException($meta, self::class);
+            throw new \SonarStudios\LaravelJsonApi\Exceptions\InvalidMetaException(self::class);
         }
         $this->meta = $meta;
         return $this;
