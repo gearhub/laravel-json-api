@@ -165,9 +165,9 @@ class Resource extends ResourceIdentifier
         ];
 
         if ($this->links) {
-            $returned_array['links'] = array_map(function($link) {
-                return $link->toArray();
-            }, $this->links);
+            $returned_array['links'] = array_reduce($this->links, function($prev, $link) {
+                return array_merge($prev, $link->toArray());
+            }, []);
         }
 
         if ($this->meta) {
@@ -175,9 +175,9 @@ class Resource extends ResourceIdentifier
         }
 
         if ($this->relationships) {
-            $returned_array['relationships'] = array_map(function($relationship) {
-                return $relationship->toArray();
-            }, $this->relationships);
+            $returned_array['relationships'] = array_reduce($this->relationships, function($prev, $relationship) {
+                return array_merge($prev, $relationship->toArray());
+            }, []);
         }
 
         return $returned_array;
